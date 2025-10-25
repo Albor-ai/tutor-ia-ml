@@ -85,7 +85,7 @@ print("Pipeline treinado com sucesso.")
 # Agora precisamos salvar tanto o pipeline quanto o LabelEncoder para a inferência.
 os.makedirs(MODEL_DIR, exist_ok=True)
 
-print(f"\nSalvando o pipeline completo em: {MODEL_PATH}")
+print(f"Salvando o pipeline completo em: {MODEL_PATH}")
 joblib.dump(full_pipeline, MODEL_PATH)
 
 # Salva também o LabelEncoder
@@ -93,4 +93,4 @@ LE_PATH = os.path.join(MODEL_DIR, 'label_encoder.joblib')
 joblib.dump(le, LE_PATH)
 print(f"Salvando o LabelEncoder em: {LE_PATH}")
 
-print("\nPipeline e LabelEncoder salvos com sucesso!")
+print("Pipeline e LabelEncoder salvos com sucesso!")
