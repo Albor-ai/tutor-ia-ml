@@ -256,3 +256,72 @@ Este checklist detalhado será nosso roteiro. Concluiremos as tarefas incrementa
     *   **Ação:** Atualizar o arquivo `docs/VISAO_FUTURA.md`.
     *   **Aprendizado:** Consolidar o conhecimento de que dados simulados são um ponto de partida, mas o mundo real tem mais complexidades.
     *   **Status:** Concluído. Documento de visão futura atualizado com o resumo do projeto e próximos passos.
+
+#### **Fase 7: Otimização de Hiperparâmetros** (Concluída)
+
+*   [X] **7.1. Definir o Espaço de Busca (Grid de Hiperparâmetros):**
+    *   **Objetivo:** Definir quais hiperparâmetros do Random Forest vamos ajustar e quais valores testar.
+    *   **Ação:** Criar um dicionário (grid) com os hiperparâmetros, como `n_estimators` (número de árvores), `max_depth` (profundidade máxima), `min_samples_split`, etc.
+    *   **Aprendizado:** Entender o que são hiperparâmetros e como eles impactam o comportamento e o desempenho do modelo.
+    *   **Status:** Concluído.
+
+*   [X] **7.2. Escolher a Estratégia de Busca:**
+    *   **Objetivo:** Selecionar um método eficiente para encontrar a melhor combinação de hiperparâmetros.
+    *   **Ação:** Utilizar `RandomizedSearchCV` do Scikit-learn. É mais rápido que `GridSearchCV` e muito eficaz para uma primeira otimização.
+    *   **Aprendizado:** Compreender a diferença entre busca aleatória (`RandomizedSearchCV`) e busca em grade (`GridSearchCV`).
+    *   **Status:** Concluído.
+
+*   [X] **7.3. Executar a Otimização:**
+    *   **Objetivo:** Rodar o processo de busca para encontrar os melhores hiperparâmetros.
+    *   **Ação:** Instanciar e executar o `.fit()` no objeto `RandomizedSearchCV` com os dados de treino.
+    *   **Saída Esperada:** Um objeto treinado contendo os resultados da busca.
+    *   **Status:** Concluído.
+
+*   [X] **7.4. Avaliar o Melhor Modelo Encontrado:**
+    *   **Objetivo:** Analisar os resultados da otimização e verificar se houve melhoria.
+    *   **Ação:** Extrair os melhores parâmetros (`.best_params_`) e o melhor score (`.best_score_`). Treinar um novo modelo com esses parâmetros e avaliar no conjunto de teste.
+    *   **Saída Esperada:** Uma comparação do desempenho do modelo otimizado versus o modelo baseline.
+    *   **Status:** Concluído. A otimização não resultou em melhoria de desempenho no conjunto de teste (0.00% de ganho), indicando que o gargalo para este dataset não está nos hiperparâmetros do Random Forest.
+
+#### **Fase 8: Experimentação com Novos Modelos (XGBoost)** (Concluída)
+
+*   [X] **8.1. Instalar a Biblioteca XGBoost:**
+    *   **Objetivo:** Adicionar o `XGBoost`, uma biblioteca de Gradient Boosting de alta performance, ao nosso ambiente.
+    *   **Ação:** Executar `uv pip install xgboost` e `brew install libomp` (no macOS) para instalar a biblioteca e suas dependências.
+    *   **Aprendizado:** Como gerenciar dependências e resolver problemas de bibliotecas externas (`libomp`).
+    *   **Status:** Concluído.
+
+*   [X] **8.2. Adicionar XGBoost ao Pipeline de Treinamento:**
+    *   **Objetivo:** Integrar o `XGBClassifier` ao nosso notebook de modelagem para uma comparação direta.
+    *   **Ação:** Importar e adicionar o `XGBClassifier` ao dicionário `models` no notebook.
+    *   **Aprendizado:** A vantagem de ter um pipeline de experimentação que permite testar novos modelos facilmente.
+    *   **Status:** Concluído.
+
+*   [X] **8.3. Otimizar e Comparar o Desempenho:**
+    *   **Objetivo:** Otimizar os hiperparâmetros do XGBoost e avaliar se ele supera o baseline do Random Forest.
+    *   **Ação:** Usar `RandomizedSearchCV` para encontrar a melhor combinação de hiperparâmetros para o XGBoost.
+    *   **Saída Esperada:** Uma conclusão clara se o XGBoost oferece um desempenho superior.
+    *   **Status:** Concluído. A otimização resultou em uma **melhora de 3.91%** em relação ao XGBoost baseline. O modelo otimizado alcançou **66.50% de acurácia**, tornando-se o nosso novo campeão. Os melhores parâmetros (`max_depth=3`, `learning_rate=0.01`) indicam que um modelo que aprende de forma mais lenta e com árvores mais simples generaliza melhor para este problema.
+
+#### **Fase 9: Finalização e Deploy do Modelo** (Concluída)
+
+*   [X] **9.1. Salvar o Modelo Final:**
+    *   **Objetivo:** Persistir o nosso melhor modelo (XGBoost otimizado) para que possa ser usado em produção sem a necessidade de retreinamento.
+    *   **Ação:** Treinar o `XGBClassifier` com os melhores hiperparâmetros em **todos** os dados de treino e salvar o objeto do modelo em um arquivo `lp_model.joblib` usando a biblioteca `joblib`.
+    *   **Aprendizado:** Como salvar e versionar modelos treinados.
+    *   **Status:** Concluído. O pipeline completo, incluindo o modelo e os pré-processadores, foi salvo em `src/models/lp_model.joblib`.
+
+*   [X] **9.2. Criar um Script de Inferência:**
+    *   **Objetivo:** Desenvolver um script que simule o uso do modelo em um ambiente de produção.
+    *   **Ação:** Criar um script `predict.py` que:
+        1.  Carrega o pipeline e o `LabelEncoder` salvos.
+        2.  Recebe dados brutos de um novo usuário.
+        3.  Usa o pipeline para fazer uma previsão e decodifica o resultado.
+    *   **Aprendizado:** A importância de um pipeline de inferência consistente que replica o ambiente de treinamento, usando artefatos salvos para evitar erros.
+    *   **Status:** Concluído. O script `predict.py` foi criado e validado, prevendo corretamente o perfil de um usuário de exemplo.
+
+---
+
+### **Conclusão do Projeto**
+
+O projeto foi concluído com sucesso, passando por todas as etapas de um ciclo de vida de Machine Learning, desde a concepção e geração de dados até a experimentação, otimização e criação de um pipeline de inferência funcional. O modelo final, um `XGBoost` otimizado, foi salvo e está pronto para ser integrado em aplicações maiores.

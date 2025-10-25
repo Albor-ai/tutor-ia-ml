@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import os
 
-def generate_simulated_lp_data(num_samples=2000):
+def generate_simulated_lp_data(num_samples=5000):
     """
     Generates simulated data for Learning Profile (LP) inference.
     """
@@ -42,22 +42,24 @@ def generate_simulated_lp_data(num_samples=2000):
     for i in range(num_samples):
         profile = np.random.choice(learning_profiles, p=[0.25, 0.25, 0.25, 0.25]) # Even distribution initially
         
+        # Probabilistic assignment of preferred resource with reduced correlation
+        resource_options = ['video', 'audio', 'text', 'practical']
         if profile == 'Visual':
-            df.loc[i, 'time_spent_on_video'] = df.loc[i, 'time_spent_on_video'] * np.random.uniform(1.2, 1.8)
-            df.loc[i, 'visual_quizzes_accuracy'] = df.loc[i, 'visual_quizzes_accuracy'] * np.random.uniform(1.05, 1.15)
-            df.loc[i, 'most_preferred_resource_type'] = 'video'
+            df.loc[i, 'time_spent_on_video'] *= np.random.uniform(1.2, 1.8)
+            df.loc[i, 'visual_quizzes_accuracy'] *= np.random.uniform(1.05, 1.15)
+            df.loc[i, 'most_preferred_resource_type'] = np.random.choice(resource_options, p=[0.4, 0.2, 0.2, 0.2])
         elif profile == 'Auditivo':
-            df.loc[i, 'time_spent_on_audio'] = df.loc[i, 'time_spent_on_audio'] * np.random.uniform(1.2, 1.8)
-            df.loc[i, 'most_preferred_resource_type'] = 'audio'
+            df.loc[i, 'time_spent_on_audio'] *= np.random.uniform(1.2, 1.8)
+            df.loc[i, 'most_preferred_resource_type'] = np.random.choice(resource_options, p=[0.2, 0.4, 0.2, 0.2])
         elif profile == 'Leitura/Escrita':
-            df.loc[i, 'time_spent_reading'] = df.loc[i, 'time_spent_reading'] * np.random.uniform(1.2, 1.8)
-            df.loc[i, 'time_spent_writing'] = df.loc[i, 'time_spent_writing'] * np.random.uniform(1.2, 1.8)
-            df.loc[i, 'text_quizzes_accuracy'] = df.loc[i, 'text_quizzes_accuracy'] * np.random.uniform(1.05, 1.15)
-            df.loc[i, 'most_preferred_resource_type'] = 'text'
+            df.loc[i, 'time_spent_reading'] *= np.random.uniform(1.2, 1.8)
+            df.loc[i, 'time_spent_writing'] *= np.random.uniform(1.2, 1.8)
+            df.loc[i, 'text_quizzes_accuracy'] *= np.random.uniform(1.05, 1.15)
+            df.loc[i, 'most_preferred_resource_type'] = np.random.choice(resource_options, p=[0.2, 0.2, 0.4, 0.2])
         elif profile == 'Cinestésico':
-            df.loc[i, 'completed_exercices'] = df.loc[i, 'completed_exercices'] * np.random.uniform(1.5, 2.5)
-            df.loc[i, 'time_spent_on_quizz'] = df.loc[i, 'time_spent_on_quizz'] * np.random.uniform(1.2, 1.8)
-            df.loc[i, 'most_preferred_resource_type'] = 'practical'
+            df.loc[i, 'completed_exercices'] *= np.random.uniform(1.5, 2.5)
+            df.loc[i, 'time_spent_on_quizz'] *= np.random.uniform(1.2, 1.8)
+            df.loc[i, 'most_preferred_resource_type'] = np.random.choice(resource_options, p=[0.2, 0.2, 0.2, 0.4])
         
         lp_data.append(profile)
 
