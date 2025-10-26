@@ -14,7 +14,7 @@ COPY pyproject.toml uv.lock ./
 RUN apt-get update && apt-get install -y cmake build-essential
 
 # 6. Install dependencies using the lock file for reproducibility
-RUN uv sync --frozen
+RUN uv sync --frozen --no-build
 
 # 7. Copy the application source code, including models
 COPY src/ ./src/
