@@ -13,14 +13,18 @@ COPY pyproject.toml uv.lock ./
 # 5. Install build dependencies required for packages like pyarrow
 RUN apt-get update && apt-get install -y cmake build-essential
 
-# 6. Install dependencies using the lock file for reproducibility
-RUN uv sync --frozen --no-build
+# 6. Create a virtual environment with a specific python version
+RUN python3.11 -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
 
-# 7. Copy the application source code, including models
+# 7. Install dependencies using the lock file for reproducibility
+RUN uv sync --frozen
+
+# 8. Copy the application source code, including models
 COPY src/ ./src/
 
-# 8. Expose the port the app will run on
+# 9. Expose the port the app will run on
 EXPOSE 8000
 
-# 9. Define the command to run the application
+# 10. Define the command to run the application
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
