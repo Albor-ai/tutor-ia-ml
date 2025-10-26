@@ -10,14 +10,17 @@ RUN pip install uv
 # 4. Copy dependency definition files
 COPY pyproject.toml uv.lock ./
 
-# 5. Install dependencies using the lock file for reproducibility
+# 5. Install build dependencies required for packages like pyarrow
+RUN apt-get update && apt-get install -y cmake build-essential
+
+# 6. Install dependencies using the lock file for reproducibility
 RUN uv sync --frozen
 
-# 6. Copy the application source code, including models
+# 7. Copy the application source code, including models
 COPY src/ ./src/
 
-# 7. Expose the port the app will run on
+# 8. Expose the port the app will run on
 EXPOSE 8000
 
-# 8. Define the command to run the application
+# 9. Define the command to run the application
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
