@@ -327,7 +327,7 @@ O projeto foi concluído com sucesso, passando por todas as etapas de um ciclo d
 
 ---
 
-#### **Fase 10: Refatoração de Features e Target** (A fazer)
+#### **Fase 10: Refatoração de Features e Target** (Concluída)
 
 *Objetivo: Renomear a coluna target para `learning_profiles` e adicionar a nova feature `time_spent_on_projects` em todo o projeto.*
 
@@ -341,20 +341,39 @@ O projeto foi concluído com sucesso, passando por todas as etapas de um ciclo d
         *   Adicionar `'time_spent_on_projects'` à lista `numeric_features`.
     *   **Status:** Concluído.
 
+*   [X] **10.4. Atualizar Interface (Streamlit):**
+    *   **Ação:** Editar `app_streamlit.py` para adicionar o novo campo e usar o novo nome da feature.
+    *   **Status:** Concluído.
+
+*   [X] **10.5. Atualizar API (FastAPI):**
+    *   **Ação:** Editar `main.py` para adicionar o novo campo no Pydantic model.
+    *   **Status:** Concluído.
+
 *   [ ] **10.3. Executar o Re-treinamento:**
     *   **Ação:** Executar `uv run python src/save_model.py` para gerar os novos artefatos de modelo.
-    *   **Status:** A fazer.
-
-*   [ ] **10.4. Atualizar Interface (Streamlit):**
-    *   **Ação:** Editar `app_streamlit.py` para adicionar o novo campo e usar o novo nome da feature.
-    *   **Status:** A fazer.
-
-*   [ ] **10.5. Atualizar API (FastAPI):**
-    *   **Ação:** Editar `main.py` para adicionar o novo campo no Pydantic model.
     *   **Status:** A fazer.
 
 *   [ ] **10.6. (Opcional) Atualizar Notebooks e Scripts Adicionais:**
     *   **Ação:** Verificar e corrigir as referências à coluna target em `notebooks/*.ipynb` e `src/predict.py`.
     *   **Status:** A fazer.
 
+#### **Fase 11: Experimentação de Interface (Chatbot)** (Concluída)
 
+*Objetivo: Explorar a viabilidade de substituir o formulário estático por uma interface de chatbot mais dinâmica para a coleta de dados.*
+
+*   [X] **11.1. Implementar a Interface de Chat:**
+    *   **Ação:** Refatorar o `app_streamlit.py` para usar os componentes `st.chat_message` e `st.chat_input`, criando um fluxo de perguntas e respostas sequenciais.
+    *   **Status:** Concluído.
+
+*   [X] **11.2. Avaliar a Robustez da Coleta de Dados:**
+    *   **Ação:** Discutir e analisar a capacidade do chatbot de interpretar entradas em linguagem natural (ex: "30 minutos" em vez de "0.5").
+    *   **Status:** Concluído.
+
+*   [X] **11.3. Pesquisar Modelos Conversacionais Locais:**
+    *   **Ação:** Analisar a viabilidade de usar modelos de linguagem "pequenos" (como `Qwen3-VL-2B` e `Qwen3-0.6B`) para rodar localmente, em vez de depender de uma API externa.
+    *   **Status:** Concluído. A análise revelou que mesmo modelos pequenos exigem um ecossistema de software pesado (PyTorch, Transformers) e recursos computacionais significativos (RAM, GPU para boa performance), tornando a abordagem local complexa e lenta para este projeto.
+
+*   [X] **11.4. Decisão Arquitetural e Reversão:**
+    *   **Ação:** Com base na complexidade e nos requisitos para uma experiência de chat verdadeiramente inteligente (dependência de APIs pagas ou de um setup local pesado), foi decidido abandonar a abordagem de chatbot.
+    *   **Saída:** O `app_streamlit.py` foi revertido para a versão anterior, baseada em formulário, que é mais simples, rápida e não possui dependências externas.
+    *   **Status:** Concluído.
