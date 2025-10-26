@@ -24,8 +24,8 @@ except FileNotFoundError:
 
 # --- 3. Divisão dos Dados ---
 # Separamos as features (X) do target (y) ANTES de qualquer outra coisa
-X = df_raw.drop('perfil_aprendizagem', axis=1)
-y = df_raw['perfil_aprendizagem']
+X = df_raw.drop('learning_profiles', axis=1)
+y = df_raw['learning_profiles']
 
 # Dividimos em treino e teste para treinar o pipeline
 X_train, _, y_train, _ = train_test_split(X, y, test_size=0.3, random_state=42, stratify=y)
@@ -33,9 +33,9 @@ X_train, _, y_train, _ = train_test_split(X, y, test_size=0.3, random_state=42, 
 # --- 4. Definição do Pipeline de Pré-processamento ---
 # Definimos explicitamente quais colunas são numéricas e quais são categóricas
 numeric_features = [
-    'time_spent_on_video', 'time_spent_on_audio', 'time_spent_reading',
-    'time_spent_writing', 'time_spent_on_quizz', 'time_spent_on_flashcards',
-    'completed_exercices', 'completed_quizzes', 'completed_flashcards',
+    'time_spent_on_video', 'time_spent_on_audio', 'time_spent_on_reading',
+    'time_spent_on_writing', 'time_spent_on_quizz', 'time_spent_on_flashcards',
+    'time_spent_on_projects', 'completed_exercices', 'completed_quizzes', 'completed_flashcards',
     'text_quizzes_accuracy', 'visual_quizzes_accuracy'
 ]
 categorical_features = ['most_preferred_resource_type']
@@ -47,7 +47,7 @@ preprocessor = ColumnTransformer(
         ('num', StandardScaler(), numeric_features),
         ('cat', OneHotEncoder(handle_unknown='ignore'), categorical_features)
     ],
-    remainder='passthrough'
+    remainder='drop'
 )
 
 # --- 5. Definição do Modelo Final (XGBoost com melhores parâmetros) ---
@@ -56,12 +56,13 @@ le = LabelEncoder()
 _ = le.fit(y_train) # Treina o LabelEncoder
 y_train_encoded = le.transform(y_train)
 
+# Hiperparâmetros otimizados a partir da análise do notebook de modelagem
 best_params_xgb = {
-    'subsample': 0.8,
-    'n_estimators': 500,
+    'subsample': 0.9,
+    'n_estimators': 200,
     'max_depth': 3,
-    'learning_rate': 0.01,
-    'colsample_bytree': 0.9,
+    'learning_rate': 0.05,
+    'colsample_bytree': 0.7,
     'random_state': 42,
     'use_label_encoder': False,
     'eval_metric': 'mlogloss'

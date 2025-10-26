@@ -59,7 +59,7 @@ Este checklist detalhado será nosso roteiro. Concluiremos as tarefas incrementa
 
 *   [X] **2.1. Criação de Dados Simulados para o Modelo LP:**
     *   **Objetivo:** Gerar um conjunto de dados sintéticos que imitem o tipo de informação que teríamos do Tutor.IA, incluindo os perfis de aprendizagem como rótulos.
-    *   **Ação:** Utilizar `pandas` e `numpy` para criar um DataFrame com um número razoável de linhas (~1000 a 5000), contendo as `features` identificadas na etapa 1.2 e uma coluna `perfil_aprendizagem` (nosso `target`).
+    *   **Ação:** Utilizar `pandas` e `numpy` para criar um DataFrame com um número razoável de linhas (~1000 a 5000), contendo as `features` identificadas na etapa 1.2 e uma coluna `learning_profiles` (nosso `target`).
     *   **Saída Esperada:** Um arquivo `CSV` sintético salvo em `data/raw/simulated_lp_data.csv`.
     *   **Status:** Concluído. Dados simulados gerados manualmente pelo usuário.
 
@@ -69,7 +69,7 @@ Este checklist detalhado será nosso roteiro. Concluiremos as tarefas incrementa
         *   Carregar os dados.
         *   Verificar estatísticas descritivas (`.describe()`, `.info()`).
         *   Visualizar distribuições de features (histogramas, boxplots, gráficos de barras para categóricas, usando `matplotlib` e `seaborn`).
-        *   Analisar a distribuição do `target` (`perfil_aprendizagem`).
+        *   Analisar a distribuição do `target` (`learning_profiles`).
         *   Explorar relações entre features e entre features e o target.
     *   **Saída Esperada:** Um notebook com a análise e os primeiros insights sobre os dados.
     *   **Status:** Concluído. Notebook `eda_lp_data.ipynb` criado. Agora você pode executá-lo e analisar os resultados.
@@ -82,7 +82,7 @@ Este checklist detalhado será nosso roteiro. Concluiremos as tarefas incrementa
     *   **Saída Esperada:** Notebook `preprocessing_lp_data.ipynb` criado e dados carregados.
     *   **Status:** Concluído. Notebook `preprocessing_lp_data.ipynb` criado e corrigido.
 
-*   [X] **3.2. Codificação do Target (`perfil_aprendizagem`):**
+*   [X] **3.2. Codificação do Target (`learning_profiles`):**
     *   **Objetivo:** Converter o target categórico (nomes dos perfis) em representação numérica que os modelos de ML podem usar.
     *   **Ação:** Utilizar `LabelEncoder` do Scikit-learn para transformar os 4 perfis de aprendizagem em números inteiros (0, 1, 2, 3).
     *   **Aprendizado:** Entender por que a codificação do target é necessária e os diferentes tipos de codificadores. `LabelEncoder` é adequado para o target de classificação.
@@ -169,7 +169,6 @@ Este checklist detalhado será nosso roteiro. Concluiremos as tarefas incrementa
     *   **Ação:** Utilizar `.predict(X_train)` e `.predict(X_test)` para cada modelo.
 
     *   **Aprendizado:** Entender a diferença entre prever no conjunto de treino (para verificar *overfitting*) e no conjunto de teste (para estimar o desempenho real).
-
     *   **Saída Esperada:** Previsões (`y_pred_train`, `y_pred_test`) para cada modelo.
 
     *   **Status:** Concluído (implementado no notebook).
@@ -325,3 +324,37 @@ Este checklist detalhado será nosso roteiro. Concluiremos as tarefas incrementa
 ### **Conclusão do Projeto**
 
 O projeto foi concluído com sucesso, passando por todas as etapas de um ciclo de vida de Machine Learning, desde a concepção e geração de dados até a experimentação, otimização e criação de um pipeline de inferência funcional. O modelo final, um `XGBoost` otimizado, foi salvo e está pronto para ser integrado em aplicações maiores.
+
+---
+
+#### **Fase 10: Refatoração de Features e Target** (A fazer)
+
+*Objetivo: Renomear a coluna target para `learning_profiles` e adicionar a nova feature `time_spent_on_projects` em todo o projeto.*
+
+*   [X] **10.1. Atualizar Geração de Dados:**
+    *   **Ação:** Verificar se `src/utils/generate_simulated_data.py` já reflete as mudanças (`time_spent_on_projects` e `learning_profiles`).
+    *   **Status:** Concluído.
+
+*   [X] **10.2. Atualizar Script de Treinamento:**
+    *   **Ação:** Editar `src/save_model.py` para usar os novos nomes.
+        *   Alterar a separação do target para `df_raw['learning_profiles']`.
+        *   Adicionar `'time_spent_on_projects'` à lista `numeric_features`.
+    *   **Status:** Concluído.
+
+*   [ ] **10.3. Executar o Re-treinamento:**
+    *   **Ação:** Executar `uv run python src/save_model.py` para gerar os novos artefatos de modelo.
+    *   **Status:** A fazer.
+
+*   [ ] **10.4. Atualizar Interface (Streamlit):**
+    *   **Ação:** Editar `app_streamlit.py` para adicionar o novo campo e usar o novo nome da feature.
+    *   **Status:** A fazer.
+
+*   [ ] **10.5. Atualizar API (FastAPI):**
+    *   **Ação:** Editar `main.py` para adicionar o novo campo no Pydantic model.
+    *   **Status:** A fazer.
+
+*   [ ] **10.6. (Opcional) Atualizar Notebooks e Scripts Adicionais:**
+    *   **Ação:** Verificar e corrigir as referências à coluna target em `notebooks/*.ipynb` e `src/predict.py`.
+    *   **Status:** A fazer.
+
+

@@ -4,74 +4,93 @@ import os
 
 def generate_simulated_lp_data(num_samples=5000):
     """
-    Generates simulated data for Learning Profile (LP) inference.
+    Generates more realistic simulated data for Learning Profile (LP) inference.
+    Includes softened correlations, profile overlap, unbalanced distribution, and noise.
     """
     np.random.seed(42) # for reproducibility
 
-    # Define learning profiles
+    # 1. Unbalanced Profile Distribution (+/- 10% margin from 0.25)
+    # Order: ['Visual', 'Auditivo', 'Leitura/Escrita', 'Cinestésico']
     learning_profiles = ['Visual', 'Auditivo', 'Leitura/Escrita', 'Cinestésico']
+    profile_distribution = [0.275, 0.225, 0.275, 0.225]
 
     # Define features and their typical ranges/values
     data = {}
 
-    # Time-based features (in minutes)
-    data['time_spent_on_video'] = np.random.normal(loc=60, scale=30, size=num_samples).clip(0, 200)
-    data['time_spent_on_audio'] = np.random.normal(loc=40, scale=20, size=num_samples).clip(0, 150)
-    data['time_spent_reading'] = np.random.normal(loc=70, scale=35, size=num_samples).clip(0, 250)
-    data['time_spent_writing'] = np.random.normal(loc=30, scale=15, size=num_samples).clip(0, 100)
-    data['time_spent_on_quizz'] = np.random.normal(loc=20, scale=10, size=num_samples).clip(0, 60)
-    data['time_spent_on_flashcards'] = np.random.normal(loc=15, scale=8, size=num_samples).clip(0, 45)
+    # Time-based features (in hours)
+    data['time_spent_on_video'] = np.random.normal(loc=5, scale=3, size=num_samples).clip(0, 40)
+    data['time_spent_on_audio'] = np.random.normal(loc=3, scale=2, size=num_samples).clip(0, 40)
+    data['time_spent_on_reading'] = np.random.normal(loc=4, scale=3, size=num_samples).clip(0, 40)
+    data['time_spent_on_writing'] = np.random.normal(loc=3, scale=2, size=num_samples).clip(0, 40)
+    data['time_spent_on_quizz'] = np.random.normal(loc=2, scale=1.5, size=num_samples).clip(0, 40)
+    data['time_spent_on_flashcards'] = np.random.normal(loc=2, scale=1.5, size=num_samples).clip(0, 40)
+    data['time_spent_on_projects'] = np.random.normal(loc=2, scale=2, size=num_samples).clip(0, 40)
 
     # Completion-based features
-    data['completed_exercices'] = np.random.randint(0, 50, size=num_samples)
-    data['completed_quizzes'] = np.random.randint(0, 30, size=num_samples)
-    data['completed_flashcards'] = np.random.randint(0, 100, size=num_samples)
+    data['completed_exercices'] = np.random.randint(0, 20, size=num_samples)
+    data['completed_quizzes'] = np.random.randint(0, 15, size=num_samples)
+    data['completed_flashcards'] = np.random.randint(0, 20, size=num_samples)
 
     # Accuracy-based features (0-100)
-    data['text_quizzes_accuracy'] = np.random.normal(loc=75, scale=10, size=num_samples).clip(50, 100)
-    data['visual_quizzes_accuracy'] = np.random.normal(loc=80, scale=10, size=num_samples).clip(50, 100)
+    data['text_quizzes_accuracy'] = np.random.normal(loc=75, scale=15, size=num_samples).clip(20, 100)
+    data['visual_quizzes_accuracy'] = np.random.normal(loc=75, scale=15, size=num_samples).clip(20, 100)
 
     # Most preferred resource type (categorical)
-    data['most_preferred_resource_type'] = np.random.choice(['video', 'audio', 'text', 'practical'], size=num_samples, p=[0.25, 0.2, 0.3, 0.25])
+    data['most_preferred_resource_type'] = np.random.choice(['video', 'audio', 'text', 'practical'], size=num_samples, p=[0.25, 0.25, 0.25, 0.25])
+
+
 
     df = pd.DataFrame(data)
 
-    # Introduce correlation with learning profiles
-    # This is a simplified way to create some patterns
+    # 3. & 4. Soften Correlations and Introduce Overlap
     lp_data = []
     for i in range(num_samples):
-        profile = np.random.choice(learning_profiles, p=[0.25, 0.25, 0.25, 0.25]) # Even distribution initially
+        profile = np.random.choice(learning_profiles, p=profile_distribution)
         
-        # Probabilistic assignment of preferred resource with reduced correlation
         resource_options = ['video', 'audio', 'text', 'practical']
+        
         if profile == 'Visual':
-            df.loc[i, 'time_spent_on_video'] *= np.random.uniform(1.2, 1.8)
-            df.loc[i, 'visual_quizzes_accuracy'] *= np.random.uniform(1.05, 1.15)
-            df.loc[i, 'most_preferred_resource_type'] = np.random.choice(resource_options, p=[0.4, 0.2, 0.2, 0.2])
+            # Primary trait (softened)
+            df.loc[i, 'time_spent_on_video'] *= np.random.uniform(1.1, 1.6)
+            df.loc[i, 'visual_quizzes_accuracy'] *= np.random.uniform(1.05, 1.1)
+            # Secondary trait (overlap)
+            df.loc[i, 'time_spent_on_reading'] *= np.random.uniform(1.0, 1.2) # Visuals may read diagrams
+            df.loc[i, 'most_preferred_resource_type'] = np.random.choice(resource_options, p=[0.35, 0.2, 0.25, 0.2])
+
         elif profile == 'Auditivo':
-            df.loc[i, 'time_spent_on_audio'] *= np.random.uniform(1.2, 1.8)
-            df.loc[i, 'most_preferred_resource_type'] = np.random.choice(resource_options, p=[0.2, 0.4, 0.2, 0.2])
+            # Primary trait (softened)
+            df.loc[i, 'time_spent_on_audio'] *= np.random.uniform(1.2, 1.7)
+            # Secondary trait (overlap)
+            df.loc[i, 'time_spent_on_video'] *= np.random.uniform(1.0, 1.3) # Audio learners might watch lectures
+            df.loc[i, 'most_preferred_resource_type'] = np.random.choice(resource_options, p=[0.25, 0.35, 0.2, 0.2])
+
         elif profile == 'Leitura/Escrita':
-            df.loc[i, 'time_spent_reading'] *= np.random.uniform(1.2, 1.8)
-            df.loc[i, 'time_spent_writing'] *= np.random.uniform(1.2, 1.8)
-            df.loc[i, 'text_quizzes_accuracy'] *= np.random.uniform(1.05, 1.15)
-            df.loc[i, 'most_preferred_resource_type'] = np.random.choice(resource_options, p=[0.2, 0.2, 0.4, 0.2])
+            # Primary trait (softened)
+            df.loc[i, 'time_spent_on_reading'] *= np.random.uniform(1.2, 1.6)
+            df.loc[i, 'time_spent_on_writing'] *= np.random.uniform(1.1, 1.5)
+            df.loc[i, 'text_quizzes_accuracy'] *= np.random.uniform(1.05, 1.1)
+            # Secondary trait (overlap)
+            df.loc[i, 'time_spent_on_flashcards'] *= np.random.uniform(1.0, 1.3)
+            df.loc[i, 'most_preferred_resource_type'] = np.random.choice(resource_options, p=[0.2, 0.2, 0.35, 0.25])
+
         elif profile == 'Cinestésico':
-            df.loc[i, 'completed_exercices'] *= np.random.uniform(1.5, 2.5)
-            df.loc[i, 'time_spent_on_quizz'] *= np.random.uniform(1.2, 1.8)
-            df.loc[i, 'most_preferred_resource_type'] = np.random.choice(resource_options, p=[0.2, 0.2, 0.2, 0.4])
+            # Primary trait (softened)
+            df.loc[i, 'time_spent_on_projects'] *= np.random.uniform(1.5, 2.5)
+            df.loc[i, 'completed_exercices'] *= np.random.uniform(1.2, 1.8)
+            # Secondary trait (overlap)
+            df.loc[i, 'time_spent_on_quizz'] *= np.random.uniform(1.1, 1.4)
+            df.loc[i, 'visual_quizzes_accuracy'] *= np.random.uniform(1.0, 1.05) # Spatial/visual aspect of doing
+            df.loc[i, 'most_preferred_resource_type'] = np.random.choice(resource_options, p=[0.2, 0.2, 0.25, 0.35])
         
         lp_data.append(profile)
 
-    df['perfil_aprendizagem'] = lp_data
+    df['learning_profiles'] = lp_data
 
-    # Ensure numerical columns are within reasonable bounds after correlation adjustments
-    for col in ['time_spent_on_video', 'time_spent_on_audio', 'time_spent_reading', 'time_spent_writing',
-                'time_spent_on_quizz', 'time_spent_on_flashcards', 'completed_exercices', 'completed_quizzes',
-                'completed_flashcards', 'text_quizzes_accuracy', 'visual_quizzes_accuracy']:
-        df[col] = df[col].clip(lower=0) # Ensure no negative values
+    # Ensure numerical columns are within reasonable bounds
+    for col in df.select_dtypes(include=np.number).columns:
+        df[col] = df[col].clip(lower=0)
         if 'accuracy' in col:
-            df[col] = df[col].clip(upper=100) # Ensure accuracy is max 100
+            df[col] = df[col].clip(upper=100)
 
     return df
 

@@ -35,10 +35,11 @@ except FileNotFoundError as e:
 class RawInput(BaseModel):
     time_spent_on_video: float
     time_spent_on_audio: float
-    time_spent_reading: float
-    time_spent_writing: float
+    time_spent_on_reading: float
+    time_spent_on_writing: float
     time_spent_on_quizz: float
     time_spent_on_flashcards: float
+    time_spent_on_projects: float
     completed_exercices: int
     completed_quizzes: int
     completed_flashcards: int
@@ -52,10 +53,11 @@ class RawInput(BaseModel):
             "example": {
                 "time_spent_on_video": 5.0,
                 "time_spent_on_audio": 1.0,
-                "time_spent_reading": 3.0,
-                "time_spent_writing": 2.0,
+                "time_spent_on_reading": 3.0,
+                "time_spent_on_writing": 2.0,
                 "time_spent_on_quizz": 2.0,
                 "time_spent_on_flashcards": 1.0,
+                "time_spent_on_projects": 4.0,
                 "completed_exercices": 10,
                 "completed_quizzes": 5,
                 "completed_flashcards": 3,

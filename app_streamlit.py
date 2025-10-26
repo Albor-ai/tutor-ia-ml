@@ -97,13 +97,14 @@ if model_selection == "Diagnóstico de Perfil de Aprendizagem":
         with st.sidebar.form("profile_form"):
             st.write("Responda com valores aproximados sobre sua rotina de estudos semanal.")
             
-            with st.expander("Tempo Gasto em Recursos (horas/semana)", expanded=True):
+            with st.expander("Tempo Gasto em Recursos (horas por semana)", expanded=True):
                 time_spent_on_video = st.number_input("Em vídeos (aulas, tutoriais)", min_value=0.0, max_value=168.0, value=0.0, step=0.5)
                 time_spent_on_audio = st.number_input("Em áudios (podcasts, audiobooks)", min_value=0.0, max_value=168.0, value=0.0, step=0.5)
-                time_spent_reading = st.number_input("Lendo (livros, artigos)", min_value=0.0, max_value=168.0, value=0.0, step=0.5)
-                time_spent_writing = st.number_input("Escrevendo (resumos, anotações)", min_value=0.0, max_value=168.0, value=0.0, step=0.5)
+                time_spent_on_reading = st.number_input("Lendo (livros, artigos)", min_value=0.0, max_value=168.0, value=0.0, step=0.5)
+                time_spent_on_writing = st.number_input("Escrevendo (resumos, anotações)", min_value=0.0, max_value=168.0, value=0.0, step=0.5)
                 time_spent_on_quizz = st.number_input("Em quizzes e testes", min_value=0.0, max_value=168.0, value=0.0, step=0.5)
                 time_spent_on_flashcards = st.number_input("Usando flashcards", min_value=0.0, max_value=168.0, value=0.0, step=0.5)
+                time_spent_on_projects = st.number_input("Em projetos práticos", min_value=0.0, max_value=168.0, value=0.0, step=0.5)
 
             with st.expander("Atividades e Desempenho", expanded=True):
                 completed_exercices = st.number_input("Exercícios práticos concluídos", min_value=0, value=0)
@@ -122,11 +123,11 @@ if model_selection == "Diagnóstico de Perfil de Aprendizagem":
             submitted = st.form_submit_button("✨ Descobrir meu Perfil!")
 
         with st.sidebar.expander("ℹ️ Sobre o Diagnóstico"):
-            st.info("""
+            st.info('''
             Este diagnóstico é gerado por um modelo de Machine Learning (XGBoost) treinado com dados simulados de hábitos de estudo.
             
             O resultado é uma **sugestão** para te ajudar a encontrar os melhores métodos de estudo, e não um rótulo definitivo.
-            """)
+            ''')
 
         # --- Área Principal (Resultados ou Boas-Vindas) ---
         if submitted:
@@ -134,8 +135,9 @@ if model_selection == "Diagnóstico de Perfil de Aprendizagem":
             with st.spinner('Analisando seu perfil...'):
                 input_data = {
                     'time_spent_on_video': [time_spent_on_video], 'time_spent_on_audio': [time_spent_on_audio],
-                    'time_spent_reading': [time_spent_reading], 'time_spent_writing': [time_spent_writing],
+                    'time_spent_on_reading': [time_spent_on_reading], 'time_spent_on_writing': [time_spent_on_writing],
                     'time_spent_on_quizz': [time_spent_on_quizz], 'time_spent_on_flashcards': [time_spent_on_flashcards],
+                    'time_spent_on_projects': [time_spent_on_projects],
                     'completed_exercices': [completed_exercices], 'completed_quizzes': [completed_quizzes],
                     'completed_flashcards': [completed_flashcards], 'text_quizzes_accuracy': [text_quizzes_accuracy],
                     'visual_quizzes_accuracy': [visual_quizzes_accuracy], 'most_preferred_resource_type': [most_preferred_resource_type]
@@ -144,7 +146,6 @@ if model_selection == "Diagnóstico de Perfil de Aprendizagem":
                 prediction_numeric = pipeline.predict(input_df)
                 predicted_profile_name = le.inverse_transform(prediction_numeric)[0]
                 
-                st.balloons()
                 st.success(f"**Diagnóstico Concluído!**")
                 profile = PROFILE_INFO.get(predicted_profile_name)
                 if profile:
@@ -159,22 +160,22 @@ if model_selection == "Diagnóstico de Perfil de Aprendizagem":
                     st.error("Não foi possível encontrar informações para o perfil previsto.")
         else:
             # --- TELA DE BOAS-VINDAS ---
-            st.markdown("""
+            st.markdown('''
             Bem-vindo ao Diagnóstico Interativo de Perfil de Aprendizagem do Tutor.IA! 
 
             Preencha o formulário na barra lateral à esquerda para descobrir seu perfil predominante e receber dicas personalizadas.
-            """)
+            ''')
             st.subheader("Como funciona?")
-            st.markdown("""
+            st.markdown('''
             Esta ferramenta utiliza um modelo de **Machine Learning** para analisar seus hábitos de estudo e identificar seu perfil de aprendizagem predominante. 
             
             O modelo, chamado **XGBoost**, foi treinado para reconhecer padrões em informações como:
-            - O tempo que você dedica a diferentes tipos de materiais (vídeos, textos, etc.).
+            - O tempo que você dedica a diferentes tipos de materiais de estudo (vídeos, textos, etc.).
+            - Seu desempenho em diferentes tipos de atividades.
             - Suas preferências de recursos.
-            - Seu desempenho em diferentes tipos de avaliação.
 
-            O resultado não é um rótulo fixo, mas uma **sugestão poderosa** para te ajudar a entender seus pontos fortes e a escolher as melhores técnicas de estudo para você.
-            """)
+            O resultado não é um rótulo fixo, mas uma **sugestão** para te ajudar a entender seus pontos fortes e a escolher as melhores técnicas de estudo para você.
+            ''')
             st.info("👈 **Preencha o formulário na barra lateral para começar!**")
 
 
@@ -185,7 +186,7 @@ elif model_selection == "Recomendação de Conteúdo (em desenvolvimento)":
 
     # --- TELA DE BOAS-VINDAS (PLACEHOLDER) ---
     st.subheader("O que esperar deste modelo?")
-    st.markdown("""
+    st.markdown('''
         O objetivo deste futuro modelo é sugerir materiais de estudos mais aderentes ao seu perfil de aprendizagem.
         
         **Como vai funcionar?**
@@ -195,5 +196,5 @@ elif model_selection == "Recomendação de Conteúdo (em desenvolvimento)":
             - seu nível atual de conhecimento do assunto (ex: "Iniciante", "Intermediário", "Avançado").
             - sua preferência de formato de conteúdo (ex: "vídeos", "artigos", "cursos interativos").
         2.  Com base nessas informações, ele irá buscar e recomendar os melhores recursos (vídeos, artigos, cursos, exercícios práticos) alinhados ao seu estilo de aprender.
-    """)
+    ''')
     st.info("Em breve o modelo estará disponível para uso.")
