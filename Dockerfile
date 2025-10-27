@@ -14,9 +14,10 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # 5. Copy the application source code
 COPY src/ ./src/
+COPY main.py ./main.py
 
 # 6. Expose the port the app will run on
 EXPOSE 8000
 
 # 7. Define the command to run the application
-CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
