@@ -1,4 +1,4 @@
-name: CI/CD for ML Service
+name: CI/CD - ML Service
 
 on:
   push:
@@ -17,6 +17,10 @@ jobs:
     permissions:
       contents: read
       packages: write
+    outputs:
+      image_tag: ${{ steps.vars.outputs.tag }}
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/tutor-ia-ml
 
     steps:
       - name: Checkout repository
@@ -29,11 +33,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Define image tags
+        id: vars
+        run: |
+          IMAGE_TAG="$(date -u +%Y%m%d)-${GITHUB_SHA::7}"
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> "$GITHUB_ENV"
+          echo "tag=${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
+
       - name: Extract metadata (tags, labels) for Docker
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/tutor-ia-ml
+          images: ${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=${{ steps.vars.outputs.tag }}
+            type=raw,value=stable
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
@@ -47,6 +61,8 @@ jobs:
     name: Trigger Infra Deploy
     needs: build-and-push
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/tutor-ia-ml
     steps:
       - name: Dispatch deploy event
         uses: peter-evans/repository-dispatch@v3
@@ -54,3 +70,9 @@ jobs:
           token: ${{ secrets.PAT_TOKEN }} # A PAT is required to dispatch to a different repository
           repository: ${{ github.repository_owner }}/tutor-ia-infra
           event-type: deploy
+          client-payload: >
+            {
+              "service": "ml",
+              "image": "${{ env.IMAGE_NAME }}",
+              "tag": "${{ needs.build-and-push.outputs.image_tag }}"
+            }
